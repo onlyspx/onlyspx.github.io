@@ -6,12 +6,8 @@ class DataLoader {
 
     async loadData() {
         try {
-            // Handle both local development and GitHub Pages environments
-            // Determine if we're in local development or GitHub Pages
-            const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-            const csvPath = isLocalhost
-                ? '../data/spx-data.csv'  // Local development
-                : '/onlyspx.github.io/spx-daily/data/spx-data.csv';  // GitHub Pages
+            // Use a path relative to the HTML file that loads this script
+            const csvPath = 'data/spx-data.csv';
             const response = await fetch(csvPath);
             const csvText = await response.text();
             this.data = this.parseCSV(csvText);
