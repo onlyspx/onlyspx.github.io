@@ -1,88 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Webpage</title>
-    <style>
-        #userInput {
-            width: 50%;
-            height: 50px;
-        }
-        #checkmark {
-            color: green;
-            display: none;
-        }
-
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOS Alert Formatter</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <h1>ThinkOrSwim Alert Formatter</h1>
+    
     <form id="form" onsubmit="event.preventDefault(); processInput();">
-        <input type="text" id="userInput" placeholder="Enter some text">
-        <input type="submit" value="Submit">
+        <textarea id="userInput" placeholder="Paste trading alert here..."></textarea>
+        <button type="submit">Format Alert</button>
     </form>
-    <p id="output"></p>
-    <button onclick="copyToClipboard()">Copy to Clipboard</button>
-    <span id="checkmark">✔️</span>
 
-    <h3>Examples:</h3>
-    <p>#1462 NEW BOT +4 BUTTERFLY QQQ 100 (Quarterlys) 28 MAR 24 443/440/437 PUT @.57</p>
-    <p>#1461 SOLD -2 1/2 BACKRATIO SMCI 100 (Weeklys) 5 APR 24 1370/1440 CALL @.50</p>
-    <p>#1457 SOLD -1 WDAY 100 (Weeklys) 28 MAR 24 277.5 CALL @1.50</p>
-    <p>Something not working right, please send relevant details to chintanontrading@outlook.com thank you!</p>
+    <div class="csv-preview">
+        <div class="preview-header">Formatted Alert</div>
+        <pre id="output"></pre>
+    </div>
 
-    <script>
-        function processInput() {
-            var input = document.getElementById("userInput").value;
-            input = input.replace(/CBOE/g, ''); // Remove 'CBOE'
-            input = input.replace(/PHLX/g, ''); // Remove 'CBOE'
-            input = input.replace(/AMEX/g, ''); // Remove 'CBOE'
-            input = input.replace(/ISE/g, ''); // Remove 'CBOE'
-            input = input.replace(/BOX/g, ''); // Remove 'CBOE'
-            input = input.replace(/NYSE/g, ''); // Remove 'CBOE'
-            input = input.replace(/NASDAQ/g, ''); // Remove 'CBOE'
-            input = input.replace(/BATS/g, ''); // Remove 'CBOE'
-            input = input.replace(/MEMX/g, ''); // Remove 'CBOE'
-            input = input.replace(/C2/g, ''); // Remove 'CBOE'
+    <div class="action-buttons">
+        <button id="copyButton" onclick="copyToClipboard()">
+            📋 Copy to Clipboard
+        </button>
+    </div>
 
-            input = input.replace(/cr/g, ''); // Remove 'CBOE'
-            input = input.replace(/db/g, ''); // Remove 'CBOE'
+    <div class="examples-section">
+        <h3>Example Alerts:</h3>
+        <div class="example">
+            <p>#1462 NEW BOT +4 BUTTERFLY QQQ 100 (Quarterlys) 28 MAR 24 443/440/437 PUT @.57</p>
+            <p>#1461 SOLD -2 1/2 BACKRATIO SMCI 100 (Weeklys) 5 APR 24 1370/1440 CALL @.50</p>
+            <p>#1457 SOLD -1 WDAY 100 (Weeklys) 28 MAR 24 277.5 CALL @1.50</p>
+        </div>
+        <p class="support-note">Something not working right? Contact <a href="mailto:chintanontrading@outlook.com">chintanontrading@outlook.com</a></p>
+    </div>
 
-            input = input.replace(/BOT/g, 'BUY'); // Replace 'BOT' with 'BUY'
-            input = input.replace(/SOLD/g, 'SELL'); // Replace 'SOLD' with 'SELL'
-
-            var buyIndex = input.indexOf('BUY');
-            var sellIndex = input.indexOf('SELL');
-            var index = (buyIndex > -1 ? buyIndex : sellIndex);
-            if(index > -1) {
-                input = input.substring(index);
-            }
-
-            var words = input.split(' ');
-            if(words.length > 1) {
-                words[1] = words[1].replace(/\+/g, '');
-                input = words.join(' ');
-            }
-
-            if(!input.trim().endsWith('LMT')) {
-                input = input + ' LMT';
-            }
-
-            document.getElementById("output").innerHTML = input;
-
-
-            // Hide the checkmark
-            document.getElementById("checkmark").style.display = "none";
-
-        }
-
-        function copyToClipboard() {
-            var text = document.getElementById("output").innerText;
-            navigator.clipboard.writeText(text).then(function() {
-                console.log('Copying to clipboard was successful!');
-                document.getElementById("checkmark").style.display = "inline";
-            }, function(err) {
-                console.error('Could not copy text: ', err);
-            });
-        }
-    </script>
+    <script src="tos-formatter.js"></script>
 </body>
 </html>

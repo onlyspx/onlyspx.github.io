@@ -1,87 +1,34 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Webpage</title>
-    <style>
-        #userInput {
-            width: 50%;
-            height: 50px;
-        }
-        #checkmark {
-            color: green;
-            display: none;
-        }
-
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Tools</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <form id="form" onsubmit="event.preventDefault(); processInput();">
-        <input type="text" id="userInput" placeholder="Enter some text">
-        <input type="submit" value="Submit">
-    </form>
-    <p id="output"></p>
-    <button onclick="copyToClipboard()">Copy to Clipboard</button>
-    <span id="checkmark">✔️</span>
+    <h1>Trading Tools</h1>
+    
+    <div class="nav-links">
+        <div>
+            <a href="trading-levels.html">FPL Trading Levels Converter</a>
+            <p class="tool-description">
+                Convert FPL trading level data into a structured CSV format. 
+                Automatically categorizes levels into zones (RZ2, RZ1, Pivot, SZ1, SZ2).
+            </p>
+        </div>
 
-    <h3>Examples:</h3>
-    <p>#1462 NEW BOT +4 BUTTERFLY QQQ 100 (Quarterlys) 28 MAR 24 443/440/437 PUT @.57</p>
-    <p>#1461 SOLD -2 1/2 BACKRATIO SMCI 100 (Weeklys) 5 APR 24 1370/1440 CALL @.50</p>
-    <p>#1457 SOLD -1 WDAY 100 (Weeklys) 28 MAR 24 277.5 CALL @1.50</p>
+        <div>
+            <a href="peter-alert-tos.html">TOS Alert Formatter</a>
+            <p class="tool-description">
+                Format trading alerts for ThinkOrSwim compatibility. 
+                Removes exchange codes and standardizes trading actions.
+            </p>
+        </div>
+    </div>
 
-    <script>
-        function processInput() {
-            var input = document.getElementById("userInput").value;
-            input = input.replace(/CBOE/g, ''); // Remove 'CBOE'
-            input = input.replace(/PHLX/g, ''); // Remove 'CBOE'
-            input = input.replace(/AMEX/g, ''); // Remove 'CBOE'
-            input = input.replace(/ISE/g, ''); // Remove 'CBOE'
-            input = input.replace(/BOX/g, ''); // Remove 'CBOE'
-            input = input.replace(/NYSE/g, ''); // Remove 'CBOE'
-            input = input.replace(/NASDAQ/g, ''); // Remove 'CBOE'
-            input = input.replace(/BATS/g, ''); // Remove 'CBOE'
-            input = input.replace(/MEMX/g, ''); // Remove 'CBOE'
-            input = input.replace(/C2/g, ''); // Remove 'CBOE'
-
-            input = input.replace(/cr/g, ''); // Remove 'CBOE'
-            input = input.replace(/db/g, ''); // Remove 'CBOE'
-
-            input = input.replace(/BOT/g, 'BUY'); // Replace 'BOT' with 'BUY'
-            input = input.replace(/SOLD/g, 'SELL'); // Replace 'SOLD' with 'SELL'
-
-            var buyIndex = input.indexOf('BUY');
-            var sellIndex = input.indexOf('SELL');
-            var index = (buyIndex > -1 ? buyIndex : sellIndex);
-            if(index > -1) {
-                input = input.substring(index);
-            }
-
-            var words = input.split(' ');
-            if(words.length > 1) {
-                words[1] = words[1].replace(/\+/g, '').replace(/\-/g, '');
-                input = words.join(' ');
-            }
-
-            if(!input.trim().endsWith('LMT')) {
-                input = input + ' LMT';
-            }
-
-            document.getElementById("output").innerHTML = input;
-
-
-            // Hide the checkmark
-            document.getElementById("checkmark").style.display = "none";
-
-        }
-
-        function copyToClipboard() {
-            var text = document.getElementById("output").innerText;
-            navigator.clipboard.writeText(text).then(function() {
-                console.log('Copying to clipboard was successful!');
-                document.getElementById("checkmark").style.display = "inline";
-            }, function(err) {
-                console.error('Could not copy text: ', err);
-            });
-        }
-    </script>
+    <div class="support-note">
+        <p>Need help? Contact <a href="mailto:chintanontrading@outlook.com">chintanontrading@outlook.com</a></p>
+    </div>
 </body>
 </html>

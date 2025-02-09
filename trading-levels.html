@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPL Trading Levels to CSV</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>FPL Trading Levels to CSV Converter</h1>
+    
+    <div class="info-box">
+        <p>This converter generates CSV output for the 
+            <a href="https://www.tradingview.com/script/jbJcHqAb-FPL-SR-Levels/" target="_blank">
+                FPL SR Levels TradingView Indicator
+            </a>
+        </p>
+        <p>Paste the generated CSV output into the indicator to update your daily levels.</p>
+    </div>
+
+    <textarea id="inputData" placeholder="Paste raw trading levels here..."></textarea>
+    <button onclick="convertToCSV()">Generate CSV</button>
+    <div class="action-buttons">
+        <a id="downloadLink" style="display: none;">Download CSV</a>
+        <button id="copyButton" onclick="copyToClipboard()" style="display: none;">
+            📋 Copy to Clipboard
+        </button>
+    </div>
+    <div id="csvPreview" class="csv-preview" style="display: none;">
+        <div class="preview-header">CSV Preview</div>
+        <pre id="csvContent"></pre>
+    </div>
+
+    <div class="examples-section">
+        <h3>Example Trading Levels:</h3>
+        <div class="example">
+            <button onclick="fillExample()" class="try-example-btn">Try This Example</button>
+            <pre class="example-content">Resistance Zone 1 (Bearish Under / Bullish Over):
+SPX 6130-50
+SPY 611-13
+ES 6150-70
+
+Pivot Zone (Bullish Over / Bearish Under):
+SPX 6080-6100
+SPY 606-08
+ES 6100-20
+
+Support Zone 1 (Bullish Over / Bearish Under):
+SPX 6030-50
+SPY 601-03
+ES 6050-70
+
+———————-
+
+UNDER SUPPORT ZONE 1 and watch for new SUPPORT ZONE 2 at:
+SPX 5980-6000
+SPY 596-98
+ES 6000-20
+
+OVER RESISTANCE ZONE 1 and watch for new RESISTANCE ZONE 2 at:
+SPX 6180-6200
+SPY 616-18
+ES 6200-20</pre>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
