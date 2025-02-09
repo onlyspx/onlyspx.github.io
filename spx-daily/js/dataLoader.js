@@ -6,8 +6,13 @@ class DataLoader {
 
     async loadData() {
         try {
-            // Use relative path from current location
-            const response = await fetch('../data/spx-data.csv');
+            // Handle both local development and GitHub Pages environments
+            // Determine if we're in local development or GitHub Pages
+            const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+            const csvPath = isLocalhost
+                ? '../data/spx-data.csv'  // Local development
+                : '/onlyspx.github.io/spx-daily/data/spx-data.csv';  // GitHub Pages
+            const response = await fetch(csvPath);
             const csvText = await response.text();
             this.data = this.parseCSV(csvText);
             this.processedData = this.addDayOfWeek(this.data);
