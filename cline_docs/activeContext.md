@@ -1,30 +1,30 @@
 # Active Context
 
 ## Current Work
-- Memory Bank documentation update
-- Integration of new TOS Formatter tool
+- Integration of SPX Daily data visualization tool
+- Memory Bank consolidation
 - Documentation of multi-tool architecture
 
 ## Recent Changes
-- Added peter-alert-tos.html TOS Formatter tool
-- Updated Memory Bank to reflect dual-tool structure
-- Documented both tools' functionality and patterns
-- Added support contact information
+- Integrated SPX Daily tool from separate repository
+- Updated Memory Bank to reflect three-tool structure
+- Added SPX Daily link to main navigation
+- Maintained tool separation for better organization
 
 ## Next Steps
 1. Immediate Tasks
-   - Verify updated Memory Bank documentation accuracy
-   - Test both applications' functionality
-   - Consider cross-tool UI consistency improvements
+   - Test SPX Daily tool functionality in new location
+   - Verify all tools are accessible from main navigation
+   - Ensure consistent documentation across all tools
 
 2. Future Considerations
-   - Standardize styling across both tools
+   - Standardize styling across all three tools
    - Implement shared component library
    - Add comprehensive error handling
-   - Consider combining tools into single interface
+   - Consider data update automation for SPX Daily
 
 ## Current Focus
-The project now consists of two trading tools:
+The project now consists of three trading tools:
 
 1. Trading Levels to CSV Converter:
    - Processes trading level data with zone categorization
@@ -38,4 +38,10 @@ The project now consists of two trading tools:
    - Provides clipboard integration
    - Shows example formats
 
-Both tools are stable and functional, with opportunities for UI/UX improvements and feature enhancements.
+3. SPX Daily:
+   - Displays S&P 500 historical data
+   - Provides day-of-week analysis
+   - Enables data filtering capabilities
+   - Supports weekly data updates
+
+All tools are stable and functional, with opportunities for UI/UX improvements and feature enhancements.
