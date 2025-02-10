@@ -32,12 +32,13 @@ function processInput() {
     }
 
     // Add LMT suffix if missing
-    if (!processed.trim().endsWith('LMT')) {
+    processed = processed.replace(/\s+/g, ' ').trim(); // Replace all whitespace sequences with single space
+    if (!processed.endsWith('LMT')) {
         processed = processed + ' LMT';
     }
 
     // Update output and hide checkmark
-    document.getElementById("output").textContent = processed;
+    document.getElementById("output").textContent = processed.trim();
     document.getElementById("copyButton").innerText = "📋 Copy to Clipboard";
     document.getElementById("copyButton").classList.remove("success");
 }
