@@ -115,6 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Parse PDF file
             const pdfData = await parsePDF(pdfFile);
+            console.log('PDF Data:', pdfData); // Debug log
             
             // Read TXT file
             const txtContent = await txtFile.text();
@@ -130,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const highPrice = parseFloat(high);
                 
                 let zoneType = 'Normal'; // Default zone type
+                let matchFound = false;
                 
                 // Search in both resistance and support sections
                 for (const section of ['resistance', 'support']) {
@@ -140,11 +142,17 @@ document.addEventListener('DOMContentLoaded', () => {
                             // Match price ranges with some tolerance
                             if (Math.abs(range.low - lowPrice) <= 0.5 && 
                                 Math.abs(range.high - highPrice) <= 0.5) {
+                                console.log('Match found for prices:', lowPrice, highPrice); // Debug log
+                                console.log('Entry notes:', entry.notes); // Debug log
+                                console.log('Determined type:', entry.type); // Debug log
                                 zoneType = entry.type;
+                                matchFound = true;
                                 break;
                             }
                         }
+                        if (matchFound) break;
                     }
+                    if (matchFound) break;
                 }
                 
                 // Return updated line with new zone type

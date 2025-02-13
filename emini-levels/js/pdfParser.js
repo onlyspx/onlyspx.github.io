@@ -154,25 +154,28 @@ function extractPriceRanges(text) {
 
 // Helper function to determine zone type from description
 function determineZoneType(description) {
-    const lowerDesc = description.toLowerCase();
-    const types = [
-        { pattern: 'initial resistance', type: 'ir' },
-        { pattern: 'initial support', type: 'is' },
-        { pattern: 'range extreme', type: 'rex' },
-        { pattern: 'range exhaustion', type: 'reh' },
-        { pattern: 'bias changing', type: 'bcz' },
-        { pattern: 'bias confirming', type: 'bcoz' },
-        { pattern: 'pre-market resistance', type: 'pmr' },
-        { pattern: 'pre-market support', type: 'pms' },
-        { pattern: 'important', type: 'Strong' }
-    ];
-
-    for (const { pattern, type } of types) {
-        if (lowerDesc.includes(pattern)) {
-            return type;
-        }
-    }
-
+    // Simple substring checks for exact matches
+    const text = description.toLowerCase();
+    
+    // Check for Initial Resistance/Support first
+    if (text.includes('initial resistance')) return 'ir';
+    if (text.includes('initial support')) return 'is';
+    
+    // Then check for other specific types
+    if (text.includes('range extreme')) return 'rex';
+    if (text.includes('range exhaustion')) return 'reh';
+    if (text.includes('bias changing')) return 'bcz';
+    if (text.includes('bias confirming')) return 'bcoz';
+    if (text.includes('pre-market resistance') || text.includes('premarket resistance')) return 'pmr';
+    if (text.includes('pre-market support') || text.includes('premarket support')) return 'pms';
+    
+    // Check for abbreviated forms
+    if (text.includes(' ir ') || text.includes('(ir)') || text.includes('[ir]')) return 'ir';
+    if (text.includes(' is ') || text.includes('(is)') || text.includes('[is]')) return 'is';
+    
+    // Check for importance last
+    if (text.includes('important')) return 'Strong';
+    
     return 'Normal';
 }
 
