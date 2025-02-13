@@ -11,10 +11,37 @@
     <div class="container">
         <header>
             <h1>E-mini Levels Converter</h1>
-            <p>Update TradingView levels with zone types from PDF</p>
+            <p>Combine levels with detailed notes from PDF</p>
         </header>
 
         <main>
+            <div class="examples-section">
+                <h2>Try Example Files</h2>
+                <p>Download these example files to see how it works:</p>
+                <div class="example-files">
+                    <div class="example-file">
+                        <h3>Levels (TXT)</h3>
+                        <p>Contains price levels in format: low,high,type,note</p>
+                        <a href="examples/example.txt" class="button" download>Download Example TXT</a>
+                    </div>
+                    <div class="example-file">
+                        <h3>Detailed Notes (PDF)</h3>
+                        <p>Contains detailed analysis for each level</p>
+                        <a href="examples/example.pdf" class="button" download>Download Example PDF</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="instructions">
+                <h2>How it Works</h2>
+                <ol>
+                    <li>Upload your levels TXT file (format: price_low,price_high,type,note)</li>
+                    <li>Upload the PDF with detailed notes for each level</li>
+                    <li>Get combined output with summarized notes from PDF</li>
+                </ol>
+                <p class="note">The tool matches price levels and updates the last column with summarized notes, preserving zone types like "Initial Resistance", "Range Exhaustion", etc.</p>
+            </div>
+
             <div class="upload-section">
                 <div class="file-inputs">
                     <div class="drop-zone" id="pdfDropZone">
@@ -28,7 +55,7 @@
                     <div class="drop-zone" id="txtDropZone">
                         <div class="drop-zone-content">
                             <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/%3E%3Cpolyline points='17 8 12 3 7 8'/%3E%3Cline x1='12' y1='3' x2='12' y2='15'/%3E%3C/svg%3E" alt="Upload" class="upload-icon">
-                            <p>Drop TradingView TXT file here<br>or <span class="browse-text">browse</span></p>
+                            <p>Drop TXT file here<br>or <span class="browse-text">browse</span></p>
                         </div>
                         <input type="file" id="txtInput" accept=".txt" class="file-input">
                     </div>
@@ -55,6 +82,13 @@
                     <button id="copyButton" class="button">Copy to Clipboard</button>
                     <button id="downloadButton" class="button">Download TXT</button>
                 </div>
+            </div>
+
+            <div class="output-format">
+                <h3>Output Format Example</h3>
+                <pre class="example-output">5400.00,5408.00,R,Initial Resistance: Break Bullish
+5382.50,5387.50,R,Range Exhaustion: Reversal Lower
+5368.25,5372.75,R,Pre-market Support: Hold Bullish</pre>
             </div>
         </main>
 

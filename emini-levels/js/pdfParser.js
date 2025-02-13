@@ -7,13 +7,12 @@ async function parsePDF(file) {
         const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
         let fullText = '';
 
-        // Extract text from each page with position information
+        // Extract text from each page
         for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
             const textContent = await page.getTextContent();
             
             // Sort items by vertical position (y) to maintain reading order
-            // For same y, sort by x to maintain left-to-right order
             const sortedItems = textContent.items.sort((a, b) => {
                 const yDiff = b.transform[5] - a.transform[5];
                 return yDiff !== 0 ? yDiff : a.transform[4] - b.transform[4];
@@ -26,8 +25,6 @@ async function parsePDF(file) {
 
             sortedItems.forEach(item => {
                 const y = Math.round(item.transform[5]);
-                
-                // If this is the first item or y position is significantly different
                 if (currentY === null || Math.abs(y - currentY) > 2) {
                     if (currentLine.length > 0) {
                         lines.push(currentLine.join(' '));
@@ -35,11 +32,9 @@ async function parsePDF(file) {
                     }
                     currentY = y;
                 }
-
                 currentLine.push(item.str);
             });
 
-            // Add last line if exists
             if (currentLine.length > 0) {
                 lines.push(currentLine.join(' '));
             }
@@ -54,87 +49,34 @@ async function parsePDF(file) {
     }
 }
 
-// Process the extracted text into structured data
+// Process the extracted text into a map of price ranges to notes
 function processExtractedText(text) {
-    const sections = {
-        resistance: [],
-        support: []
-    };
-    
-    let currentSection = null;
-    let buffer = [];
-    let isFirstEntry = true;
-
-    // Split text into lines and process each line
+    const priceRangeMap = new Map();
     const lines = text.split('\n').map(line => cleanText(line));
 
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        
-        // Skip empty lines and headers
-        if (!line || line.includes('WWW.EMINIPLAYER.NET')) {
-            continue;
-        }
+    for (const line of lines) {
+        if (!line || line.includes('WWW.EMINIPLAYER.NET')) continue;
 
-        // Special handling for the first entry if it contains a price range
-        if (isFirstEntry && containsPriceRange(line)) {
-            // Assume it's resistance if not clearly marked
-            currentSection = 'resistance';
-            sections[currentSection].push(processEntry(line));
-            isFirstEntry = false;
-            continue;
-        }
-        isFirstEntry = false;
-
-        // Detect section changes
-        if (line.toLowerCase().includes('resistance notes')) {
-            currentSection = 'resistance';
-            buffer = [];
-            continue;
-        } else if (line.toLowerCase().includes('support notes')) {
-            currentSection = 'support';
-            buffer = [];
-            continue;
-        }
-
-        if (currentSection && line.trim()) {
-            // If line contains a price range, process the buffer
-            if (containsPriceRange(line)) {
-                if (buffer.length > 0) {
-                    sections[currentSection].push(processEntry(buffer.join(' ')));
-                }
-                buffer = [line];
-            } else {
-                // Check if this line might be a continuation of a price range line
-                const previousLine = buffer[buffer.length - 1] || '';
-                if (containsPriceRange(previousLine)) {
-                    // This line is probably part of the notes for the previous price range
-                    buffer.push(line);
-                } else {
-                    buffer.push(line);
-                }
+        const priceRanges = extractPriceRanges(line);
+        if (priceRanges.length > 0) {
+            const notes = line
+                .replace(/\b\d+(?:\.\d+)?(?:\s*[-–]\s*|\s+to\s+)\d+(?:\.\d+)?\b/g, '')
+                .trim();
+            
+            if (notes) {
+                const key = `${priceRanges[0].low}-${priceRanges[0].high}`;
+                const summary = summarizeNotes(notes);
+                priceRangeMap.set(key, summary);
+                console.log('Processed range:', key, '→', summary);
             }
         }
     }
 
-    // Process last buffer if exists
-    if (buffer.length > 0 && currentSection) {
-        sections[currentSection].push(processEntry(buffer.join(' ')));
-    }
-
-    return sections;
-}
-
-// Helper function to check if a line contains a price range
-function containsPriceRange(text) {
-    // More flexible price range detection
-    const priceRangeRegex = /\b\d+(?:\.\d+)?(?:\s*[-–]\s*|\s+to\s+)\d+(?:\.\d+)?\b/;
-    return priceRangeRegex.test(text);
+    return priceRangeMap;
 }
 
 // Helper function to extract price ranges from text
 function extractPriceRanges(text) {
-    // More flexible price range detection
     const priceRangeRegex = /\b(\d+(?:\.\d+)?)(?:\s*[-–]\s*|\s+to\s+)(\d+(?:\.\d+)?)\b/g;
     const matches = [];
     let match;
@@ -142,8 +84,6 @@ function extractPriceRanges(text) {
     while ((match = priceRangeRegex.exec(text)) !== null) {
         const low = parseFloat(match[1]);
         const high = parseFloat(match[2]);
-        
-        // Validate price range
         if (!isNaN(low) && !isNaN(high) && low < high) {
             matches.push({ low, high });
         }
@@ -152,47 +92,66 @@ function extractPriceRanges(text) {
     return matches;
 }
 
-// Helper function to determine zone type from description
-function determineZoneType(description) {
-    // Simple substring checks for exact matches
-    const text = description.toLowerCase();
+// Helper function to summarize notes
+function summarizeNotes(notes) {
+    const text = notes.toLowerCase();
     
-    // Check for Initial Resistance/Support first
-    if (text.includes('initial resistance')) return 'ir';
-    if (text.includes('initial support')) return 'is';
-    
-    // Then check for other specific types
-    if (text.includes('range extreme')) return 'rex';
-    if (text.includes('range exhaustion')) return 'reh';
-    if (text.includes('bias changing')) return 'bcz';
-    if (text.includes('bias confirming')) return 'bcoz';
-    if (text.includes('pre-market resistance') || text.includes('premarket resistance')) return 'pmr';
-    if (text.includes('pre-market support') || text.includes('premarket support')) return 'pms';
-    
-    // Check for abbreviated forms
-    if (text.includes(' ir ') || text.includes('(ir)') || text.includes('[ir]')) return 'ir';
-    if (text.includes(' is ') || text.includes('(is)') || text.includes('[is]')) return 'is';
-    
-    // Check for importance last
-    if (text.includes('important')) return 'Strong';
-    
-    return 'Normal';
-}
+    // Define zone types with full names
+    const zoneTypes = [
+        { pattern: 'initial resistance', name: 'Initial Resistance' },
+        { pattern: 'initial support', name: 'Initial Support' },
+        { pattern: 'pre-market resistance', name: 'Pre-market Resistance' },
+        { pattern: 'pre market resistance', name: 'Pre-market Resistance' },
+        { pattern: 'pre-market support', name: 'Pre-market Support' },
+        { pattern: 'pre market support', name: 'Pre-market Support' },
+        { pattern: 'range exhaustion', name: 'Range Exhaustion' },
+        { pattern: 'range extreme', name: 'Range Extreme' },
+        { pattern: 'bias changing', name: 'Bias Changing' },
+        { pattern: 'bias confirming', name: 'Bias Confirming' }
+    ];
 
-// Process a complete entry (price range + notes)
-function processEntry(text) {
-    const priceRanges = extractPriceRanges(text);
-    // Remove price ranges and clean up the remaining text for notes
-    const notes = text
-        .replace(/\b\d+(?:\.\d+)?(?:\s*[-–]\s*|\s+to\s+)\d+(?:\.\d+)?\b/g, '')
-        .replace(/\s+/g, ' ')
-        .trim();
+    // Find zone type
+    let zoneType = '';
+    for (const type of zoneTypes) {
+        if (text.includes(type.pattern)) {
+            zoneType = type.name;
+            break;
+        }
+    }
+
+    // Extract direction
+    let direction = '';
+    if (text.includes('bullish')) direction = 'Bullish';
+    else if (text.includes('bearish')) direction = 'Bearish';
+    else if (text.includes('lower')) direction = 'Lower';
+    else if (text.includes('higher')) direction = 'Higher';
+
+    // Extract key actions
+    let action = '';
+    if (text.includes('break') || text.includes('breaking')) action = 'Break';
+    else if (text.includes('hold')) action = 'Hold';
+    else if (text.includes('reversal')) action = 'Reversal';
+
+    // Combine components
+    const parts = [];
+    if (zoneType) parts.push(zoneType);
     
-    return {
-        ranges: priceRanges,
-        notes: notes,
-        type: determineZoneType(text)
-    };
+    // Combine action and direction
+    const actionDirection = [action, direction].filter(Boolean).join(' ');
+    if (actionDirection) {
+        parts.push(actionDirection);
+    }
+
+    // If no specific components found, use cleaned original notes
+    if (parts.length === 0) {
+        const cleaned = notes
+            .replace(/[,;]/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+        return cleaned.length > 50 ? cleaned.substring(0, 47) + '...' : cleaned;
+    }
+
+    return parts.join(': ');
 }
 
 // Helper function to clean and normalize text
@@ -201,4 +160,19 @@ function cleanText(text) {
         .replace(/\s+/g, ' ')
         .replace(/[^\x20-\x7E]/g, '') // Remove non-printable characters
         .trim();
+}
+
+// Helper function to find closest price range
+function findClosestPriceRange(target, priceRangeMap, tolerance = 0.5) {
+    const [targetLow, targetHigh] = target.split('-').map(Number);
+    
+    for (const [range] of priceRangeMap) {
+        const [low, high] = range.split('-').map(Number);
+        if (Math.abs(low - targetLow) <= tolerance && 
+            Math.abs(high - targetHigh) <= tolerance) {
+            return range;
+        }
+    }
+    
+    return null;
 }

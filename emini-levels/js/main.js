@@ -113,53 +113,44 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             showLoading();
             
-            // Parse PDF file
-            const pdfData = await parsePDF(pdfFile);
-            console.log('PDF Data:', pdfData); // Debug log
+            // Parse PDF file to get price range map
+            console.log('Parsing PDF file...');
+            const priceRangeMap = await parsePDF(pdfFile);
+            console.log('Price range map:', priceRangeMap);
             
             // Read TXT file
+            console.log('Reading TXT file...');
             const txtContent = await txtFile.text();
             const txtLines = txtContent.trim().split('\n');
+            console.log('TXT Lines:', txtLines);
             
             // Process each line from TXT file
-            const updatedLines = txtLines.map(line => {
+            const updatedLines = txtLines.map((line, index) => {
+                console.log(`\nProcessing line ${index + 1}:`, line);
                 const [low, high, type, _] = line.split(',');
-                if (!low || !high || !type) return line; // Keep header or invalid lines as is
-                
-                // Find matching price range in PDF data
-                const lowPrice = parseFloat(low);
-                const highPrice = parseFloat(high);
-                
-                let zoneType = 'Normal'; // Default zone type
-                let matchFound = false;
-                
-                // Search in both resistance and support sections
-                for (const section of ['resistance', 'support']) {
-                    if (!pdfData[section]) continue;
-                    
-                    for (const entry of pdfData[section]) {
-                        for (const range of entry.ranges) {
-                            // Match price ranges with some tolerance
-                            if (Math.abs(range.low - lowPrice) <= 0.5 && 
-                                Math.abs(range.high - highPrice) <= 0.5) {
-                                console.log('Match found for prices:', lowPrice, highPrice); // Debug log
-                                console.log('Entry notes:', entry.notes); // Debug log
-                                console.log('Determined type:', entry.type); // Debug log
-                                zoneType = entry.type;
-                                matchFound = true;
-                                break;
-                            }
-                        }
-                        if (matchFound) break;
-                    }
-                    if (matchFound) break;
+                if (!low || !high || !type) {
+                    console.log('Skipping invalid line');
+                    return line;
                 }
                 
-                // Return updated line with new zone type
-                return `${low},${high},${type},${zoneType}`;
+                // Create price range key
+                const priceRange = `${low}-${high}`;
+                console.log('Looking for price range:', priceRange);
+                
+                // Try to find exact or closest match
+                const matchedRange = findClosestPriceRange(priceRange, priceRangeMap);
+                if (matchedRange) {
+                    const summary = priceRangeMap.get(matchedRange);
+                    console.log('Found match:', matchedRange, '→', summary);
+                    return `${low},${high},${type},${summary}`;
+                } else {
+                    console.log('No match found');
+                    return line;
+                }
             });
             
             // Display results
+            console.log('Final updated lines:', updatedLines);
             displayResults(updatedLines.join('\n'));
             clearError();
         } catch (error) {

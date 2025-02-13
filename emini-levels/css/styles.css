@@ -44,6 +44,61 @@ header p {
     color: var(--secondary-color);
 }
 
+/* Examples section */
+.examples-section {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.example-files {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.example-file {
+    flex: 1;
+    padding: 1rem;
+    background-color: var(--background-color);
+    border-radius: 4px;
+}
+
+.example-file h3 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.example-file p {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+}
+
+/* Instructions */
+.instructions {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.instructions ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.instructions .note {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    padding: 0.5rem;
+    background-color: var(--background-color);
+    border-radius: 4px;
+}
+
 /* Upload section styles */
 .upload-section {
     margin-bottom: 2rem;
@@ -201,6 +256,30 @@ header p {
     font-size: 0.9rem;
 }
 
+/* Output format section */
+.output-format {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.output-format h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.example-output {
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 1rem;
+    font-family: monospace;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+}
+
 /* Button styles */
 .action-buttons {
     display: flex;
@@ -216,6 +295,9 @@ header p {
     color: white;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: inline-block;
 }
 
 .button:hover {
@@ -247,7 +329,8 @@ footer a:hover {
 
 /* Responsive styles */
 @media (max-width: 768px) {
-    .file-inputs {
+    .file-inputs,
+    .example-files {
         flex-direction: column;
         gap: 1rem;
     }
