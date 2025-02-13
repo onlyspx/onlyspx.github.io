@@ -13,9 +13,11 @@ async function parsePDF(file) {
             const textContent = await page.getTextContent();
             
             // Sort items by vertical position (y) to maintain reading order
-            const sortedItems = textContent.items.sort((a, b) => 
-                b.transform[5] - a.transform[5] || a.transform[4] - b.transform[4]
-            );
+            // For same y, sort by x to maintain left-to-right order
+            const sortedItems = textContent.items.sort((a, b) => {
+                const yDiff = b.transform[5] - a.transform[5];
+                return yDiff !== 0 ? yDiff : a.transform[4] - b.transform[4];
+            });
 
             // Group items by line based on y-position
             let currentY = null;
@@ -24,12 +26,9 @@ async function parsePDF(file) {
 
             sortedItems.forEach(item => {
                 const y = Math.round(item.transform[5]);
-                if (currentY === null) {
-                    currentY = y;
-                }
-
-                // If y position changes significantly, start a new line
-                if (Math.abs(y - currentY) > 2) {
+                
+                // If this is the first item or y position is significantly different
+                if (currentY === null || Math.abs(y - currentY) > 2) {
                     if (currentLine.length > 0) {
                         lines.push(currentLine.join(' '));
                         currentLine = [];
@@ -64,6 +63,7 @@ function processExtractedText(text) {
     
     let currentSection = null;
     let buffer = [];
+    let isFirstEntry = true;
 
     // Split text into lines and process each line
     const lines = text.split('\n').map(line => cleanText(line));
@@ -76,12 +76,24 @@ function processExtractedText(text) {
             continue;
         }
 
+        // Special handling for the first entry if it contains a price range
+        if (isFirstEntry && containsPriceRange(line)) {
+            // Assume it's resistance if not clearly marked
+            currentSection = 'resistance';
+            sections[currentSection].push(processEntry(line));
+            isFirstEntry = false;
+            continue;
+        }
+        isFirstEntry = false;
+
         // Detect section changes
         if (line.toLowerCase().includes('resistance notes')) {
             currentSection = 'resistance';
+            buffer = [];
             continue;
         } else if (line.toLowerCase().includes('support notes')) {
             currentSection = 'support';
+            buffer = [];
             continue;
         }
 
@@ -93,7 +105,14 @@ function processExtractedText(text) {
                 }
                 buffer = [line];
             } else {
-                buffer.push(line);
+                // Check if this line might be a continuation of a price range line
+                const previousLine = buffer[buffer.length - 1] || '';
+                if (containsPriceRange(previousLine)) {
+                    // This line is probably part of the notes for the previous price range
+                    buffer.push(line);
+                } else {
+                    buffer.push(line);
+                }
             }
         }
     }
@@ -108,13 +127,15 @@ function processExtractedText(text) {
 
 // Helper function to check if a line contains a price range
 function containsPriceRange(text) {
-    const priceRangeRegex = /\b\d+(?:\.\d+)?(?:\s*-\s*|\s+to\s+)\d+(?:\.\d+)?\b/;
+    // More flexible price range detection
+    const priceRangeRegex = /\b\d+(?:\.\d+)?(?:\s*[-–]\s*|\s+to\s+)\d+(?:\.\d+)?\b/;
     return priceRangeRegex.test(text);
 }
 
 // Helper function to extract price ranges from text
 function extractPriceRanges(text) {
-    const priceRangeRegex = /\b(\d+(?:\.\d+)?)(?:\s*-\s*|\s+to\s+)(\d+(?:\.\d+)?)\b/g;
+    // More flexible price range detection
+    const priceRangeRegex = /\b(\d+(?:\.\d+)?)(?:\s*[-–]\s*|\s+to\s+)(\d+(?:\.\d+)?)\b/g;
     const matches = [];
     let match;
 
@@ -158,7 +179,11 @@ function determineZoneType(description) {
 // Process a complete entry (price range + notes)
 function processEntry(text) {
     const priceRanges = extractPriceRanges(text);
-    const notes = text.replace(/\b\d+(?:\.\d+)?(?:\s*-\s*|\s+to\s+)\d+(?:\.\d+)?\b/g, '').trim();
+    // Remove price ranges and clean up the remaining text for notes
+    const notes = text
+        .replace(/\b\d+(?:\.\d+)?(?:\s*[-–]\s*|\s+to\s+)\d+(?:\.\d+)?\b/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
     
     return {
         ranges: priceRanges,

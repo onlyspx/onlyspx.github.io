@@ -6,6 +6,7 @@
     --text-color: #212529;
     --border-color: #dee2e6;
     --error-color: #dc3545;
+    --success-color: #28a745;
 }
 
 * {
@@ -22,7 +23,7 @@ body {
 }
 
 .container {
-    max-width: 800px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 2rem;
 }
@@ -48,7 +49,14 @@ header p {
     margin-bottom: 2rem;
 }
 
+.file-inputs {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
 .drop-zone {
+    flex: 1;
     border: 2px dashed var(--border-color);
     border-radius: 8px;
     padding: 2rem;
@@ -57,6 +65,10 @@ header p {
     transition: all 0.3s ease;
     background-color: white;
     position: relative;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .drop-zone:hover,
@@ -82,6 +94,11 @@ header p {
     border-top-color: var(--primary-color);
     border-radius: 50%;
     animation: spin 1s linear infinite;
+}
+
+.drop-zone.has-file {
+    border-color: var(--success-color);
+    background-color: rgba(40, 167, 69, 0.1);
 }
 
 @keyframes spin {
@@ -111,6 +128,38 @@ header p {
 
 .file-input {
     display: none;
+}
+
+/* File status styles */
+.file-status {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.status-item:last-child {
+    border-bottom: none;
+}
+
+.status-label {
+    font-weight: bold;
+    color: var(--secondary-color);
+}
+
+.status-value {
+    color: var(--text-color);
+}
+
+.status-value.success {
+    color: var(--success-color);
 }
 
 /* Error message styles */
@@ -176,6 +225,7 @@ header p {
 .button:disabled {
     background-color: var(--secondary-color);
     cursor: not-allowed;
+    opacity: 0.7;
 }
 
 /* Footer styles */
@@ -193,4 +243,16 @@ footer a {
 
 footer a:hover {
     text-decoration: underline;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .file-inputs {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .drop-zone {
+        min-height: 150px;
+    }
 }
