@@ -5,8 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smash Level Extractor</title>
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        #loadingIndicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        #errorMessage {
+            display: none;
+            color: red;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid red;
+            border-radius: 4px;
+            background: #fff5f5;
+        }
+    </style>
 </head>
 <body>
+    <div id="loadingIndicator">Loading application...</div>
+    <div id="errorMessage"></div>
     <div class="container">
         <header>
             <h1>Smash Level Extractor</h1>
@@ -56,7 +80,54 @@
 
     <div id="copyConfirmation" class="copy-confirmation">Copied to clipboard!</div>
 
-    <script src="js/parser.js"></script>
-    <script src="js/main.js"></script>
+    <!-- Load scripts with initialization check -->
+    <script>
+        // Global error handler
+        window.addEventListener('error', function(event) {
+            console.error('Script error:', event);
+            const errorMessage = document.getElementById('errorMessage');
+            if (errorMessage) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'Error loading application: ' + (event.error?.message || 'Unknown error');
+            }
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            if (loadingIndicator) {
+                loadingIndicator.style.display = 'none';
+            }
+        });
+
+        // Function to load script with timeout
+        function loadScriptWithTimeout(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.body.appendChild(script);
+
+                // Add timeout
+                setTimeout(() => {
+                    reject(new Error(`Timeout loading script: ${src}`));
+                }, 5000); // 5 second timeout
+            });
+        }
+
+        // Load scripts in sequence
+        Promise.resolve()
+            .then(() => loadScriptWithTimeout('js/parser.js'))
+            .then(() => loadScriptWithTimeout('js/main.js'))
+            .catch(error => {
+                console.error('Failed to load scripts:', error);
+                const errorMessage = document.getElementById('errorMessage');
+                if (errorMessage) {
+                    errorMessage.style.display = 'block';
+                    errorMessage.textContent = 'Failed to load required scripts: ' + error.message;
+                }
+                const loadingIndicator = document.getElementById('loadingIndicator');
+                if (loadingIndicator) {
+                    loadingIndicator.style.display = 'none';
+                }
+            });
+    </script>
 </body>
 </html>
