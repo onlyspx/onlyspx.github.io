@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadow Parser</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Shadow Parser</h1>
+        <div class="input-sections">
+            <div class="input-section">
+                <h3>Key Levels Section</h3>
+                <textarea id="keyLevelsInput" placeholder="Paste key levels content here..."></textarea>
+            </div>
+            <div class="input-section">
+                <h3>Today's ES and NQ Market Profile</h3>
+                <textarea id="marketProfileInput" placeholder="Paste market profile content here..."></textarea>
+            </div>
+            <button id="parseButton">Parse Data</button>
+        </div>
+        <div class="output-section">
+            <div class="key-levels-section">
+                <h2>Key Levels for Today</h2>
+                <div class="button-group">
+                    <button id="copyKeyLevels">Copy to Clipboard</button>
+                    <button id="downloadKeyLevels">Download Key Levels CSV</button>
+                </div>
+                <div class="table-container">
+                    <table id="keyLevelsTable">
+                        <thead>
+                            <tr>
+                                <th>ES Level</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="market-profile-section">
+                <h2>Market Profile and Pivot Points</h2>
+                <div class="button-group">
+                    <button id="copyMarketProfile">Copy to Clipboard</button>
+                    <button id="downloadMarketProfile">Download Market Profile CSV</button>
+                </div>
+                <div class="table-container">
+                    <table id="marketProfileTable">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>ES Level</th>
+                                <th>NQ Level</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="examples-section">
+            <h2>Example Data Format</h2>
+            
+            <div class="example-block">
+                <h3>Key Levels Example</h3>
+                <pre class="example-data">Key Levels for Today
+6157.75	ONH
+6145.25	RTH High
+6135.00	POC
+6125.75	RTH Low
+6114.00	Bottom of Single Prints 02.13
+6099.00	VPOC 02.13
+
+Virgin Point of Control (VPOC)
+6148.50	01.24.25
+6049.00	02.07.25</pre>
+            </div>
+
+            <div class="example-block">
+                <h3>Market Profile Example</h3>
+                <pre class="example-data">Today's ES and NQ Market Profile and Pivot Point Numbers
+Value Area High	6139.50	22171.00
+Point of Control	6135.00	22135.00
+Value Area Low	6131.00	22101.00
+R3	6162.25	22386.00
+R2	6153.75	22305.50
+R1	6142.75	22251.00
+Pivot	6134.25	22170.50
+S1	6123.25	22116.00
+S2	6114.75	22035.50
+S3	6103.75	21981.00</pre>
+            </div>
+        </div>
+    </div>
+    <script src="js/parser.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
