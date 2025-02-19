@@ -129,6 +129,31 @@ tr:hover {
     background-color: #f8f9fa;
 }
 
+.tradingview-section {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tradingview-section ol {
+    margin: 15px 0 15px 20px;
+}
+
+.tradingview-section li {
+    margin-bottom: 8px;
+}
+
+.tradingview-section a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.tradingview-section a:hover {
+    text-decoration: underline;
+}
+
 .examples-section {
     margin-top: 40px;
     padding: 20px;
