@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adam's ES Levels Parser</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Adam's ES Levels Parser</h1>
+        <p class="subtitle">Parse ES levels data</p>
+        <div class="input-sections">
+            <div class="input-section">
+                <h3>Levels Section</h3>
+                <textarea id="levelsInput" placeholder="Paste levels content here...
+Example:
+Supports are: 6004, 5997 (major), 5993, 5989 (major)...
+Resistances are: 6008, 6016, 6020 (major), 6028..."></textarea>
+            </div>
+            <div class="input-section">
+                <h3>Note</h3>
+                <div class="email-section">
+                    <div class="file-upload">
+                        <label for="emailFile">Upload Email (.eml file):</label>
+                        <input type="file" id="emailFile" accept=".eml">
+                        <p class="file-note">Download email to desktop and upload here</p>
+                    </div>
+                    <p class="or-divider">- OR -</p>
+                    <textarea id="emailInput" placeholder="Paste email content here for additional context..."></textarea>
+                </div>
+            </div>
+            <button id="parseButton">Parse Data</button>
+        </div>
+        <div class="output-section">
+            <div class="levels-section">
+                <h2>ES Levels</h2>
+                <div class="button-group">
+                    <button id="copyLevels">Copy to Clipboard</button>
+                    <button id="downloadLevels">Download CSV</button>
+                </div>
+                <div class="table-container">
+                    <table id="levelsTable">
+                        <thead>
+                            <tr>
+                                <th>Level</th>
+                                <th>Major</th>
+                                <th>Context</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="examples-section">
+            <h2>Example Data Format</h2>
+            <div class="example-block">
+                <h3>Levels Example</h3>
+                <pre class="example-data">Supports are: 6004, 5997 (major), 5993, 5989 (major), 5982 (major), 5977, 5970, 5961 (major)
+
+Resistances are: 6008, 6016, 6020 (major), 6028, 6037 (major), 6042, 6053, 6058 (major)</pre>
+            </div>
+        </div>
+    </div>
+    <script src="js/parser.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
