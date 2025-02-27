@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const txtDropZone = document.getElementById('txtDropZone');
     const pdfInput = document.getElementById('pdfInput');
     const txtInput = document.getElementById('txtInput');
+    const summarizeToggle = document.getElementById('summarizeToggle');
     const resultSection = document.querySelector('.result-section');
     const csvPreview = document.getElementById('csvPreview');
     const copyButton = document.getElementById('copyButton');
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let pdfFile = null;
     let txtFile = null;
+    let summarizeNotes = false;
 
     // Handle drag and drop events for both drop zones
     [pdfDropZone, txtDropZone].forEach(dropZone => {
@@ -33,6 +35,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 dropZone.classList.remove('drag-over');
             });
         });
+    });
+
+    // Handle toggle changes
+    summarizeToggle.addEventListener('change', async () => {
+        summarizeNotes = summarizeToggle.checked;
+        if (pdfFile && txtFile) {
+            await processFiles();
+        }
     });
 
     // Handle file drop
@@ -115,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Parse PDF file to get price range map
             console.log('Parsing PDF file...');
-            const priceRangeMap = await parsePDF(pdfFile);
+            const priceRangeMap = await parsePDF(pdfFile, summarizeNotes);
             console.log('Price range map:', priceRangeMap);
             
             // Read TXT file
@@ -140,9 +150,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Try to find exact or closest match
                 const matchedRange = findClosestPriceRange(priceRange, priceRangeMap);
                 if (matchedRange) {
-                    const summary = priceRangeMap.get(matchedRange);
-                    console.log('Found match:', matchedRange, '→', summary);
-                    return `${low},${high},${type},${summary}`;
+                    const notes = priceRangeMap.get(matchedRange);
+                    console.log('Found match:', matchedRange, '→', notes);
+                    return `${low},${high},${type},${notes}`;
                 } else {
                     console.log('No match found');
                     return line;

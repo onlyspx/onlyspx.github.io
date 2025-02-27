@@ -21,12 +21,19 @@
                 <ol>
                     <li>Upload your levels TXT file (format: price_low,price_high,type,note)</li>
                     <li>Upload the PDF with detailed notes for each level</li>
-                    <li>Get combined output with summarized notes from PDF</li>
+                    <li>Get combined output with full notes from PDF (or use the toggle for summarized notes)</li>
                 </ol>
-                <p class="note">The tool matches price levels and updates the last column with summarized notes, preserving zone types like "Initial Resistance", "Range Exhaustion", etc.</p>
+                <p class="note">The tool matches price levels and updates the last column with notes from the PDF. Toggle "Summarize Notes" to get condensed versions that highlight key information like zone types (e.g., "Initial Resistance", "Range Exhaustion") and market bias.</p>
             </div>
 
             <div class="upload-section">
+                <div class="options-section">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="summarizeToggle">
+                        <span class="slider"></span>
+                        <span class="toggle-label">Summarize Notes</span>
+                    </label>
+                </div>
                 <div class="file-inputs">
                     <div class="drop-zone" id="pdfDropZone">
                         <div class="drop-zone-content">

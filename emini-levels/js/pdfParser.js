@@ -1,7 +1,7 @@
 // Set up PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-async function parsePDF(file) {
+async function parsePDF(file, summarize = false) {
     try {
         const arrayBuffer = await file.arrayBuffer();
         const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
@@ -42,7 +42,7 @@ async function parsePDF(file) {
             fullText += lines.join('\n') + '\n';
         }
 
-        return processExtractedText(fullText);
+        return processExtractedText(fullText, summarize);
     } catch (error) {
         console.error('Error parsing PDF:', error);
         throw new Error('Failed to parse PDF file');
@@ -50,7 +50,7 @@ async function parsePDF(file) {
 }
 
 // Process the extracted text into a map of price ranges to notes
-function processExtractedText(text) {
+function processExtractedText(text, summarize = false) {
     const priceRangeMap = new Map();
     const lines = text.split('\n').map(line => cleanText(line));
 
@@ -65,9 +65,12 @@ function processExtractedText(text) {
             
             if (notes) {
                 const key = `${priceRanges[0].low}-${priceRanges[0].high}`;
-                const summary = summarizeNotes(notes);
-                priceRangeMap.set(key, summary);
-                console.log('Processed range:', key, '→', summary);
+                const noteData = {
+                    fullText: notes,
+                    summary: summarizeNotes(notes)
+                };
+                priceRangeMap.set(key, summarize ? noteData.summary : noteData.fullText);
+                console.log('Processed range:', key, '→', summarize ? noteData.summary : noteData.fullText);
             }
         }
     }
