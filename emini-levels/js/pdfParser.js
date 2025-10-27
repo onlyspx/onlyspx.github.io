@@ -66,7 +66,7 @@ function processExtractedText(text, summarize = false) {
             if (notes) {
                 const key = `${priceRanges[0].low}-${priceRanges[0].high}`;
                 const noteData = {
-                    fullText: notes,
+                    fullText: notes.replace(/,/g, ' -'),
                     summary: summarizeNotes(notes)
                 };
                 priceRangeMap.set(key, summarize ? noteData.summary : noteData.fullText);
