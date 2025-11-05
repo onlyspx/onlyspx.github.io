@@ -54,14 +54,36 @@ function processExtractedText(text, summarize = false) {
     const priceRangeMap = new Map();
     const lines = text.split('\n').map(line => cleanText(line));
 
-    for (const line of lines) {
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
         if (!line || line.includes('WWW.EMINIPLAYER.NET')) continue;
 
         const priceRanges = extractPriceRanges(line);
         if (priceRanges.length > 0) {
-            const notes = line
+            // Start with the current line's notes (after removing price range)
+            let notes = line
                 .replace(/\b\d+(?:\.\d+)?(?:\s*[-–]\s*|\s+to\s+)\d+(?:\.\d+)?\b/g, '')
                 .trim();
+            
+            // Collect continuation lines (lines without price ranges that follow)
+            let j = i + 1;
+            while (j < lines.length) {
+                const nextLine = lines[j];
+                // Stop if empty line or line contains a price range
+                if (!nextLine || extractPriceRanges(nextLine).length > 0) {
+                    break;
+                }
+                // Skip header/footer lines
+                if (nextLine.includes('WWW.EMINIPLAYER.NET')) {
+                    j++;
+                    continue;
+                }
+                // Append continuation line
+                notes += ' ' + nextLine;
+                j++;
+            }
+            
+            notes = notes.trim();
             
             if (notes) {
                 const key = `${priceRanges[0].low}-${priceRanges[0].high}`;
