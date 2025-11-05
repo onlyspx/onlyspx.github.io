@@ -57,6 +57,23 @@ function processExtractedText(text, summarize = false) {
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         if (!line || line.includes('WWW.EMINIPLAYER.NET')) continue;
+        
+        // Skip table headers and analysis sections
+        const skipKeywords = [
+            'Range Analysis',
+            'Period',
+            'Minimum',
+            'Maximum',
+            'Average',
+            'Previous Day',
+            'Regular Trading',
+            '24-Hour Session',
+            'Overnight',
+            '1st Hour'
+        ];
+        if (skipKeywords.some(keyword => line.includes(keyword))) {
+            continue;
+        }
 
         const priceRanges = extractPriceRanges(line);
         if (priceRanges.length > 0) {
