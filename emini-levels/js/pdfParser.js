@@ -109,7 +109,16 @@ function extractPriceRanges(text) {
     while ((match = priceRangeRegex.exec(text)) !== null) {
         const low = parseFloat(match[1]);
         const high = parseFloat(match[2]);
-        if (!isNaN(low) && !isNaN(high) && low < high) {
+        // Only accept valid price ranges:
+        // 1. Both numbers must be valid
+        // 2. Low must be less than high
+        // 3. Both prices must be at least 1000 (realistic ES/NQ futures prices)
+        // 4. Range must be reasonably small (< 100 points)
+        if (!isNaN(low) && !isNaN(high) && 
+            low < high && 
+            low >= 1000 && 
+            high >= 1000 &&
+            (high - low) < 100) {
             matches.push({ low, high });
         }
     }
