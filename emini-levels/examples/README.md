@@ -3,26 +3,25 @@
 These files demonstrate how to use the E-mini Levels Converter:
 
 ## example.txt
-Contains price levels in CSV format:
-```
-price_low,price_high,type,note
-5400.00,5408.00,R,Normal
-5382.50,5387.50,R,Normal
-5368.25,5372.75,R,Normal
+Contains the March 12, 2026 zone file in CSV format:
+``` 
+6960.75,6970.75,R,Normal
+6941.00,6949.00,R,Normal
+6924.00,6934.00,R,Normal
 ```
 
 ## example.pdf
-Contains detailed notes for each price level, including:
-- Zone types (Initial Resistance, Range Exhaustion, etc.)
-- Trading directions (Bullish/Bearish)
-- Actions (Break, Hold, Reversal)
+Contains the matching March 12, 2026 EminiPlayer worksheet using the current table layout:
+- Zone range
+- Effect on Intraday Bias
+- Notes
 
 ## Output Format
 The tool combines both files and produces output like:
 ```
-5400.00,5408.00,R,Initial Resistance: Break Bullish
-5382.50,5387.50,R,Range Exhaustion: Reversal Lower
-5368.25,5372.75,R,Pre-market Support: Hold Bullish
+6960.75,6970.75,R,Normal
+6941.00,6949.00,R,Break-out Signals Strength 6944.75 HVN, Range Extreme
+6722.25,6732.50,S,Break-down Signals Weakness Pre-Market Support
 ```
 
-The last column is updated with summarized notes from the PDF while preserving important zone types.
+If a zone is not present in the PDF, the original TXT note is preserved.
