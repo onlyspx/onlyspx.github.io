@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const csvPreview = document.getElementById('csvPreview');
     const copyButton = document.getElementById('copyButton');
     const downloadButton = document.getElementById('downloadButton');
+    const loadSampleButton = document.getElementById('loadSampleButton');
     const pdfStatus = document.getElementById('pdfStatus').querySelector('.status-value');
     const txtStatus = document.getElementById('txtStatus').querySelector('.status-value');
     const errorDisplay = document.createElement('div');
@@ -43,6 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pdfFile && txtFile) {
             await processFiles();
         }
+    });
+
+    loadSampleButton.addEventListener('click', async () => {
+        await loadSampleFiles();
     });
 
     // Handle file drop
@@ -172,6 +177,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    async function loadSampleFiles() {
+        try {
+            setSampleLoading(true);
+            clearError();
+
+            const [pdfResponse, txtResponse] = await Promise.all([
+                fetch('examples/example.pdf'),
+                fetch('examples/example.txt')
+            ]);
+
+            if (!pdfResponse.ok || !txtResponse.ok) {
+                throw new Error('Sample files could not be loaded');
+            }
+
+            const [pdfBlob, txtBlob] = await Promise.all([
+                pdfResponse.blob(),
+                txtResponse.blob()
+            ]);
+
+            pdfFile = new File([pdfBlob], 'example.pdf', { type: 'application/pdf' });
+            txtFile = new File([txtBlob], 'example.txt', { type: 'text/plain' });
+
+            updateFileStatus(pdfStatus, 'example.pdf');
+            updateFileStatus(txtStatus, 'example.txt');
+            pdfDropZone.classList.add('has-file');
+            txtDropZone.classList.add('has-file');
+
+            await processFiles();
+        } catch (error) {
+            console.error('Error loading sample files:', error);
+            showError('Failed to load the bundled sample files.');
+            resetPdfInput();
+            resetTxtInput();
+        } finally {
+            setSampleLoading(false);
+        }
+    }
+
     // Display the results
     function displayResults(content) {
         csvPreview.textContent = content;
@@ -229,6 +272,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function hideLoading() {
         pdfDropZone.classList.remove('loading');
         txtDropZone.classList.remove('loading');
+    }
+
+    function setSampleLoading(isLoading) {
+        loadSampleButton.disabled = isLoading;
+        loadSampleButton.textContent = isLoading ? 'Loading Sample...' : 'Use Sample Pair';
     }
 
     function preventDefaults(e) {
