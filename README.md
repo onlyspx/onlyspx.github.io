@@ -1,37 +1,34 @@
-# Trading Tools
+# SPX Tools
 
-Two web-based tools for trading workflow automation:
+Static site with the actively used trading tools hosted on `onlyspx.github.io`.
 
-## 1. FPL Trading Levels Converter
-- Converts formatted trading levels to CSV
-- Output compatible with [FPL SR Levels TradingView Indicator](https://www.tradingview.com/script/jbJcHqAb-FPL-SR-Levels/)
-- Supports RZ2, RZ1, Pivot, SZ1, SZ2 zones
+## Current Tools
 
-## 2. TOS Alert Formatter
-- Formats trading alerts for ThinkOrSwim platform
+### 1. Peter Alert
+- Formats trading alerts for ThinkOrSwim
 - Removes exchange codes
-- Standardizes trading actions (BOT → BUY, SOLD → SELL)
-- Adds LMT suffix
+- Standardizes trading action text
+
+### 2. E-mini Levels
+- Merges zone TXT files with notes from the current EminiPlayer worksheet PDF
+- Preserves original TXT notes when a level is not present in the PDF
+
+### 3. Smash Level Extractor
+- Converts level-analysis text into CSV output
 
 ## Project Structure
+
 ```
 /
-├── index.html              # Landing page with links to both tools
-├── trading-levels.html     # FPL Trading Levels Converter
-├── peter-alert-tos.html   # TOS Alert Formatter
-├── script.js              # Trading Levels converter logic
-├── tos-formatter.js       # TOS Alert formatter logic
-├── styles.css            # Shared styles
-└── cline_docs/           # Project documentation
-    ├── productContext.md
-    ├── systemPatterns.md
-    ├── techContext.md
-    ├── progress.md
-    └── activeContext.md
+├── index.html                    # Landing page
+├── landing.css                   # Landing page styles
+├── peter-alert-tos.html          # Peter Alert page
+├── tos-formatter.js              # Peter Alert logic
+├── styles.css                    # Shared styles for root pages
+├── emini-levels/                 # E-mini Levels tool
+└── smash-level-extractor/        # Smash Level Extractor tool
 ```
 
 ## Usage
-Simple web interface, no installation required. Open index.html to access both tools.
 
-## Support
-Contact: chintanontrading@outlook.com
+Serve the repo as a static site or open the pages in a browser.
