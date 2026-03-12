@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function setSampleLoading(isLoading) {
         loadSampleButton.disabled = isLoading;
-        loadSampleButton.textContent = isLoading ? 'Loading Sample...' : 'Use Sample Pair';
+        loadSampleButton.textContent = isLoading ? 'Loading...' : 'Use Example Data';
     }
 
     function preventDefaults(e) {
