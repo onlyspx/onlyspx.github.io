@@ -6,7 +6,7 @@ const MIN_COLUMN_GAP = 8;
 const COLUMN_GAP_MULTIPLIER = 2.25;
 const COLUMN_POSITION_TOLERANCE = 2;
 
-async function parsePDF(file, summarize = false) {
+async function parsePDF(file) {
     try {
         const arrayBuffer = await file.arrayBuffer();
         const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
@@ -17,7 +17,7 @@ async function parsePDF(file, summarize = false) {
             const page = await pdf.getPage(pageNumber);
             const textContent = await page.getTextContent();
             const rows = extractPageRows(textContent.items);
-            const { priceRangeMap: pageMap, layout } = processPageRows(rows, summarize, carryLayout);
+            const { priceRangeMap: pageMap, layout } = processPageRows(rows, carryLayout);
             carryLayout = layout;
 
             for (const [key, note] of pageMap) {
@@ -82,7 +82,7 @@ function normalizeTextItem(item) {
     };
 }
 
-function processPageRows(rows, summarize = false, startingLayout = null) {
+function processPageRows(rows, startingLayout = null) {
     const priceRangeMap = new Map();
     let currentEntry = null;
     let currentLayout = startingLayout;
@@ -101,14 +101,14 @@ function processPageRows(rows, summarize = false, startingLayout = null) {
         }
 
         if (isStopRow(rowText)) {
-            flushZoneEntry(currentEntry, priceRangeMap, summarize);
+            flushZoneEntry(currentEntry, priceRangeMap);
             currentEntry = null;
             tableActive = false;
             return;
         }
 
         if (isZoneTableHeader(rowText)) {
-            flushZoneEntry(currentEntry, priceRangeMap, summarize);
+            flushZoneEntry(currentEntry, priceRangeMap);
             currentEntry = null;
             currentLayout = extractColumnLayout(cells);
             tableActive = true;
@@ -123,7 +123,7 @@ function processPageRows(rows, summarize = false, startingLayout = null) {
         const rangeData = extractPriceRangeData(columns.zone);
 
         if (rangeData) {
-            flushZoneEntry(currentEntry, priceRangeMap, summarize);
+            flushZoneEntry(currentEntry, priceRangeMap);
             currentEntry = {
                 key: rangeData.key,
                 effect: currentLayout.effectStart !== null
@@ -143,7 +143,7 @@ function processPageRows(rows, summarize = false, startingLayout = null) {
         }
     });
 
-    flushZoneEntry(currentEntry, priceRangeMap, summarize);
+    flushZoneEntry(currentEntry, priceRangeMap);
     return {
         priceRangeMap,
         layout: currentLayout
@@ -241,7 +241,7 @@ function assignCellsToColumns(cells, layout) {
     };
 }
 
-function flushZoneEntry(entry, priceRangeMap, summarize = false) {
+function flushZoneEntry(entry, priceRangeMap) {
     if (!entry) {
         return;
     }
@@ -251,7 +251,7 @@ function flushZoneEntry(entry, priceRangeMap, summarize = false) {
         return;
     }
 
-    priceRangeMap.set(entry.key, summarize ? summarizeNotes(note) : note);
+    priceRangeMap.set(entry.key, note);
 }
 
 function buildZoneNote(effect, notes) {
@@ -365,68 +365,6 @@ function isNoiseRow(text) {
 
 function estimateTextWidth(text) {
     return Math.max(text.length, 1) * 4;
-}
-
-// Helper function to summarize notes
-function summarizeNotes(notes) {
-    const text = notes.toLowerCase();
-    
-    // Define zone types with full names
-    const zoneTypes = [
-        { pattern: 'initial resistance', name: 'Initial Resistance' },
-        { pattern: 'initial support', name: 'Initial Support' },
-        { pattern: 'pre-market resistance', name: 'Pre-market Resistance' },
-        { pattern: 'pre market resistance', name: 'Pre-market Resistance' },
-        { pattern: 'pre-market support', name: 'Pre-market Support' },
-        { pattern: 'pre market support', name: 'Pre-market Support' },
-        { pattern: 'range exhaustion', name: 'Range Exhaustion' },
-        { pattern: 'range extreme', name: 'Range Extreme' },
-        { pattern: 'bias changing', name: 'Bias Changing' },
-        { pattern: 'bias confirming', name: 'Bias Confirming' }
-    ];
-
-    // Find zone type
-    let zoneType = '';
-    for (const type of zoneTypes) {
-        if (text.includes(type.pattern)) {
-            zoneType = type.name;
-            break;
-        }
-    }
-
-    // Extract direction
-    let direction = '';
-    if (text.includes('bullish')) direction = 'Bullish';
-    else if (text.includes('bearish')) direction = 'Bearish';
-    else if (text.includes('lower')) direction = 'Lower';
-    else if (text.includes('higher')) direction = 'Higher';
-
-    // Extract key actions
-    let action = '';
-    if (text.includes('break') || text.includes('breaking')) action = 'Break';
-    else if (text.includes('hold')) action = 'Hold';
-    else if (text.includes('reversal')) action = 'Reversal';
-
-    // Combine components
-    const parts = [];
-    if (zoneType) parts.push(zoneType);
-    
-    // Combine action and direction
-    const actionDirection = [action, direction].filter(Boolean).join(' ');
-    if (actionDirection) {
-        parts.push(actionDirection);
-    }
-
-    // If no specific components found, use cleaned original notes
-    if (parts.length === 0) {
-        const cleaned = notes
-            .replace(/[,;]/g, '')
-            .replace(/\s+/g, ' ')
-            .trim();
-        return cleaned.length > 50 ? cleaned.substring(0, 47) + '...' : cleaned;
-    }
-
-    return parts.join(': ');
 }
 
 // Helper function to clean and normalize text

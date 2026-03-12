@@ -21,19 +21,14 @@
                 <ol>
                     <li>Upload your levels TXT file (format: price_low,price_high,type,note)</li>
                     <li>Upload the current EminiPlayer worksheet PDF with "Effect on Intraday Bias" and "Notes" columns</li>
-                    <li>Get combined output with full notes from PDF (or use the toggle for summarized notes)</li>
+                    <li>Get combined output with full notes from PDF</li>
                 </ol>
-                <p class="note">The tool matches price levels and updates the last column with notes from the current worksheet layout. If a level is not present in the PDF, the original TXT note is kept. Toggle "Summarize Notes" to get condensed versions that highlight key information like zone types and market bias.</p>
+                <p class="note">The tool matches price levels and updates the last column with notes from the current worksheet layout. If a level is not present in the PDF, the original TXT note is kept.</p>
             </div>
 
             <div class="upload-section">
                 <div class="options-section">
                     <div class="options-row">
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="summarizeToggle">
-                            <span class="slider"></span>
-                            <span class="toggle-label">Summarize Notes</span>
-                        </label>
                         <button id="loadSampleButton" class="button button-secondary">Use Example Data</button>
                     </div>
                 </div>
